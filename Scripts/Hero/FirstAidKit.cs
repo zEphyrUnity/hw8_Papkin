@@ -1,0 +1,34 @@
+﻿using System.Collections;
+using UnityEngine;
+
+public class FirstAidKit : MonoBehaviour
+{
+    [SerializeField] private int _smallAidKit = 10;
+    private GameObject _lastPoint;
+    private AudioSource _audioSource;
+
+    private void Start()
+    {
+        _lastPoint = GameObject.FindGameObjectWithTag("LastPoint");
+        _audioSource = gameObject.GetComponent<AudioSource>();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Hero"))
+        {
+            var hero = other.GetComponent<Health>();
+            hero.Medication(_smallAidKit);
+            
+            _audioSource.Play();
+            StartCoroutine(DelayDestroyObject(_audioSource.clip.length));
+        }
+    }
+
+    IEnumerator DelayDestroyObject(float delay)
+    {
+        gameObject.transform.position = _lastPoint.transform.position;
+        yield return new WaitForSeconds(delay);
+        Destroy(gameObject);
+    }
+}
